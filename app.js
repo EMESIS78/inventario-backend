@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const productosRoutes = require('./routes/GET/productos');
@@ -18,6 +19,7 @@ const registrosAjusteInventarioRoutes = require('./routes/POST/registrosAjusteIn
 const registrosEntradasProductosRoutes = require('./routes/POST/registrosEntradasProductos');
 const registrosSalidasProductosRoutes = require('./routes/POST/registrosSalidasProductos');
 const registrosTrasladosProductosRoutes = require('./routes/POST/registrosTrasladosProductos');
+const productosCreateRoutes = require('./routes/POST/crearProducto');
 
 // 🚀 Importar las nuevas rutas de autenticación
 const authRoutes = require('./routes/auth');
@@ -27,8 +29,10 @@ const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api/productos', productosRoutes);
+app.use('/api/productos', productosCreateRoutes);
 app.use('/api', usuariosRoutes);
 app.use('/api', movimientosRoutes);
 app.use('/api', stockRoutes);
@@ -43,6 +47,7 @@ app.use('/api', registrosAjusteInventarioRoutes);
 app.use('/api', registrosEntradasProductosRoutes);
 app.use('/api', registrosSalidasProductosRoutes);
 app.use('/api', registrosTrasladosProductosRoutes);
+
 
 // 📌 Rutas de Autenticación
 app.use('/api/auth', authRoutes); // Para login y autenticación
