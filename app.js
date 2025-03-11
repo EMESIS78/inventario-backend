@@ -20,6 +20,8 @@ const registrosEntradasProductosRoutes = require('./routes/POST/registrosEntrada
 const registrosSalidasProductosRoutes = require('./routes/POST/registrosSalidasProductos');
 const registrosTrasladosProductosRoutes = require('./routes/POST/registrosTrasladosProductos');
 const productosCreateRoutes = require('./routes/POST/crearProducto');
+const productosUpdateRoutes = require('./routes/PUT/editarProducto');
+const productosDeleteRoutes = require('./routes/DELETE/eliminarProducto');
 
 // 🚀 Importar las nuevas rutas de autenticación
 const authRoutes = require('./routes/auth');
@@ -33,6 +35,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api/productos', productosRoutes);
 app.use('/api/productos', productosCreateRoutes);
+app.use('/api/productos', productosUpdateRoutes);
+app.use('/api/productos', productosDeleteRoutes);
 app.use('/api', usuariosRoutes);
 app.use('/api', movimientosRoutes);
 app.use('/api', stockRoutes);
