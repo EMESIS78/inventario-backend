@@ -25,6 +25,7 @@ const productosDeleteRoutes = require('./routes/DELETE/eliminarProducto');
 const almacenesRoutes = require('./routes/GET/almacenes');
 const inventarioRoutes = require('./routes/GET/inventario');
 const salidasRoutes = require('./routes/GET/salidas');
+const entradasRoutes = require('./routes/GET/entradas');
 
 // 🚀 Importar las nuevas rutas de autenticación
 const authRoutes = require('./routes/auth');
@@ -50,6 +51,11 @@ app.use('/api/inventario', inventarioRoutes);
 
 {/* 📌 Rutas de salidas */}
 app.use('/api/salidas', salidasRoutes);
+
+{/* 📌 Rutas de entradas */}
+app.use('/api/entradas', entradasRoutes);
+
+{/* 📌 Rutas de usuarios */}
 
 app.use('/api', usuariosRoutes);
 app.use('/api', movimientosRoutes);
