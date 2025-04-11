@@ -26,6 +26,7 @@ const almacenesRoutes = require('./routes/GET/almacenes');
 const inventarioRoutes = require('./routes/GET/inventario');
 const salidasRoutes = require('./routes/GET/salidas');
 const entradasRoutes = require('./routes/GET/entradas');
+const trasladosRoutes = require('./routes/GET/traslados');
 
 // 🚀 Importar las nuevas rutas de autenticación
 const authRoutes = require('./routes/auth');
@@ -54,6 +55,9 @@ app.use('/api/salidas', salidasRoutes);
 
 {/* 📌 Rutas de entradas */}
 app.use('/api/entradas', entradasRoutes);
+
+{/* 📌 Rutas de traslados */}
+app.use('/api/traslados', trasladosRoutes);
 
 {/* 📌 Rutas de usuarios */}
 
