@@ -27,6 +27,12 @@ const inventarioRoutes = require('./routes/GET/inventario');
 const salidasRoutes = require('./routes/GET/salidas');
 const entradasRoutes = require('./routes/GET/entradas');
 const trasladosRoutes = require('./routes/GET/traslados');
+const obtenerProductosRoutes = require('./routes/GET/obtenerProductos');
+const platosRoutes = require('./routes/GET/platos');
+const crearPlatoRoutes = require('./routes/POST/crearPlato');
+const agrefarInsumosRoutes = require('./routes/POST/añadirInsumo');
+const eliminarInsumosRoutes = require('./routes/DELETE/eliminarInsumos');
+const actualizarInsumosRoutes = require('./routes/PUT/actualizarInsumos');
 
 // 🚀 Importar las nuevas rutas de autenticación
 const authRoutes = require('./routes/auth');
@@ -38,11 +44,23 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-{/* 📌 Rutas de productos */}
+{/* 📌 Rutas de productos Insumos */}
 app.use('/api/productos', productosRoutes);
+app.use('/api/productos/buscar', obtenerProductosRoutes); // Ruta para obtener productos por nombre o código
 app.use('/api/productos', productosCreateRoutes);
 app.use('/api/productos', productosUpdateRoutes);
 app.use('/api/productos', productosDeleteRoutes);
+app.use('/api/carta/agregar-insumos', agrefarInsumosRoutes);
+app.use('/api/carta/eliminar-insumos', eliminarInsumosRoutes);
+app.use('/api/carta/actualizar-insumos', actualizarInsumosRoutes);
+
+{/* 📌 Rutas de movimientos */}
+
+{/* 📌 Rutas de platos */}
+app.use('/api/platos', platosRoutes);
+app.use('/api/platos', crearPlatoRoutes);
+
+{/* 📌 Rutas de carta */}
 
 {/* 📌 Rutas de alamacenes */}
 app.use('/api/almacenes', almacenesRoutes);
