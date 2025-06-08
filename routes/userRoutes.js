@@ -7,7 +7,10 @@ const router = express.Router();
 // 📌 Obtener Datos del Usuario Autenticado
 router.get('/perfil', verifyToken, async (req, res) => {
     try {
-        const [rows] = await db.query('SELECT id, name, email, rol FROM users WHERE id = ?', [req.user.id]);
+        const [rows] = await db.query(
+            'SELECT id, name, email, rol, almacen_id FROM users WHERE id = ?',
+            [req.user.id]
+        );
 
         if (rows.length === 0) {
             return res.status(404).json({ error: 'Usuario no encontrado' });

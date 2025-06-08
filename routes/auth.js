@@ -39,7 +39,8 @@ router.post('/login', async (req, res) => {
                 id: user.id,
                 name: user.name,
                 email: user.email,
-                rol: user.rol
+                rol: user.rol,
+                almacen_id: user.almacen_id ?? null
             }
         });
     } catch (error) {
