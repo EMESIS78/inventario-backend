@@ -9,6 +9,7 @@ const usuariosRoutes = require('./routes/GET/usuarios');
 const movimientosRoutes = require('./routes/GET/movimientos');
 const stockRoutes = require('./routes/GET/stock');
 const detalleEntradaRoutes = require('./routes/GET/detalleEntrada');
+const detalleSalidaRoutes = require('./routes/GET/detalleSalida');
 const productosProveedorRoutes = require('./routes/GET/productoProveedor');
 const alertasStockBajoRoutes = require('./routes/GET/alertasStockBajo');
 const informeInventarioRoutes = require('./routes/GET/informeInventario');
@@ -33,6 +34,8 @@ const crearPlatoRoutes = require('./routes/POST/crearPlato');
 const agrefarInsumosRoutes = require('./routes/POST/añadirInsumo');
 const eliminarInsumosRoutes = require('./routes/DELETE/eliminarInsumos');
 const actualizarInsumosRoutes = require('./routes/PUT/actualizarInsumos');
+const reporteEntradaRoutes = require('./routes/REPORTES/reporteEntrada');
+const reporteSalidaRoutes = require('./routes/REPORTES/reporteSalida');
 
 // 🚀 Importar las nuevas rutas de autenticación
 const authRoutes = require('./routes/auth');
@@ -70,6 +73,7 @@ app.use('/api/inventario', inventarioRoutes);
 
 {/* 📌 Rutas de salidas */}
 app.use('/api/salidas', salidasRoutes);
+app.use('/api', detalleSalidaRoutes);
 
 {/* 📌 Rutas de entradas */}
 app.use('/api/entradas', entradasRoutes);
@@ -78,6 +82,10 @@ app.use('/api/entradas', entradasRoutes);
 app.use('/api/traslados', trasladosRoutes);
 
 {/* 📌 Rutas de usuarios */}
+
+{/* 📌 Rutas de reportes */}
+app.use('/api', reporteEntradaRoutes);
+app.use('/api', reporteSalidaRoutes);
 
 app.use('/api', usuariosRoutes);
 app.use('/api', movimientosRoutes);
