@@ -17,6 +17,7 @@
     "expo-file-system": "^18.1.10",
     "expo-sharing": "^13.1.5",
     "express": "^4.21.2",
+    "html-pdf-node": "^1.0.8",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
     "mysql": "^2.18.1",

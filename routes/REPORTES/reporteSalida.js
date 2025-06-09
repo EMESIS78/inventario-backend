@@ -10,7 +10,7 @@ router.get('/reporte-salidas', verifyToken, async (req, res) => {
         const user = req.user;
 
         let query = `
-      SELECT s.id_salida, s.documento, s.motivo, s.created_at,
+      SELECT s.id_salida, s.motivo, s.created_at,
              u.name AS usuario, a.nombre AS almacen
       FROM salidas s
       JOIN users u ON s.user_id = u.id
@@ -79,7 +79,6 @@ router.get('/reporte-salidas', verifyToken, async (req, res) => {
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Documento</th>
                     <th>Almacén</th>
                     <th>Motivo</th>
                     <th>Fecha</th>
@@ -90,7 +89,6 @@ router.get('/reporte-salidas', verifyToken, async (req, res) => {
                 ${salidas.map(s => `
                     <tr>
                         <td>${s.id_salida}</td>
-                        <td>${s.documento}</td>
                         <td>${s.almacen}</td>
                         <td>${s.motivo}</td>
                         <td>${new Date(s.created_at).toLocaleDateString()}</td>
