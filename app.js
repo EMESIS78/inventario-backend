@@ -37,6 +37,10 @@ const actualizarInsumosRoutes = require('./routes/PUT/actualizarInsumos');
 const reporteEntradaRoutes = require('./routes/REPORTES/reporteEntrada');
 const reporteSalidaRoutes = require('./routes/REPORTES/reporteSalida');
 const proveedoresRoutes = require('./routes/GET/proveedores');
+const informeInventarioExcelRoutes = require('./routes/REPORTES/informeInventarioExcel');
+const informeInventarioPDFRoutes = require('./routes/REPORTES/informeInventarioPDF');
+const informeGlobalExcelRoutes = require('./routes/REPORTES/reporteGlobalExcel');
+const informeGlobalPDFRoutes = require('./routes/REPORTES/reporteGlobalPDF');
 
 // 🚀 Importar las nuevas rutas de autenticación
 const authRoutes = require('./routes/auth');
@@ -87,6 +91,10 @@ app.use('/api/traslados', trasladosRoutes);
 {/* 📌 Rutas de reportes */}
 app.use('/api', reporteEntradaRoutes);
 app.use('/api', reporteSalidaRoutes);
+app.use('/api', informeInventarioExcelRoutes);
+app.use('/api', informeInventarioPDFRoutes);
+app.use('/api', informeGlobalExcelRoutes);
+app.use('/api', informeGlobalPDFRoutes);
 
 {/* 📌 Rutas de proveedores */}
 app.use('/api', proveedoresRoutes);
