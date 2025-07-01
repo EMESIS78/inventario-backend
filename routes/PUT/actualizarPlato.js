@@ -1,12 +1,11 @@
 const express = require('express');
+const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const db = require('../../db/connection');
 
-const router = express.Router();
-
-// 📁 Configuración de multer para guardar imágenes en /uploads/platos
+// 📁 Configuración del almacenamiento con multer (guardamos en /uploads/platos)
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         const uploadPath = path.join(__dirname, '../../uploads/platos');
@@ -21,9 +20,9 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// ✅ Crear nuevo plato con imagen
-router.post('/', upload.single('imagen'), async (req, res) => {
-    console.log('✅ POST /api/platos llamado');
+// ✅ Ruta para actualizar plato con imagen
+router.put('/actualizarPlato/:id', upload.single('imagen'), async (req, res) => {
+    const id_plato = req.params.id;
 
     const { nombre, descripcion, precio } = req.body;
     let insumos;
@@ -34,18 +33,17 @@ router.post('/', upload.single('imagen'), async (req, res) => {
         return res.status(400).json({ error: 'Formato incorrecto en insumos (debe ser JSON válido)' });
     }
 
-    const imagen = req.file ? `platos/${req.file.filename}` : null;
-
-    console.log('📦 Datos recibidos:', { nombre, descripcion, precio, imagen, insumos });
+    const imagen = req.file ? `platos/${req.file.filename}` : req.body.imagen;
 
     if (!nombre || !descripcion || precio === undefined || !Array.isArray(insumos)) {
-        console.log('⚠️ Faltan datos requeridos o insumos no es un array');
-        return res.status(400).json({ error: 'Faltan datos requeridos o insumos mal formateados' });
+        return res.status(400).json({ error: 'Faltan datos requeridos o formato incorrecto' });
     }
 
     try {
         const insumosJSON = JSON.stringify(insumos);
-        await db.query('CALL AgregarPlatoConInsumos(?, ?, ?, ?, ?)', [
+
+        await db.query('CALL EditarPlatoConInsumos(?, ?, ?, ?, ?, ?)', [
+            id_plato,
             nombre,
             descripcion,
             precio,
@@ -53,11 +51,10 @@ router.post('/', upload.single('imagen'), async (req, res) => {
             insumosJSON
         ]);
 
-        console.log('✅ Plato con insumos agregado con éxito');
-        res.status(201).json({ message: 'Plato con insumos agregado correctamente' });
-    } catch (err) {
-        console.error('❌ Error al agregar plato:', err.message);
-        res.status(500).json({ error: 'Error al agregar el plato' });
+        res.json({ success: true, message: 'Plato actualizado correctamente' });
+    } catch (error) {
+        console.error('❌ Error al editar el plato:', error);
+        res.status(500).json({ error: 'Error al editar el plato' });
     }
 });
 

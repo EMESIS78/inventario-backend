@@ -31,6 +31,7 @@ const trasladosRoutes = require('./routes/GET/traslados');
 const obtenerProductosRoutes = require('./routes/GET/obtenerProductos');
 const platosRoutes = require('./routes/GET/platos');
 const crearPlatoRoutes = require('./routes/POST/crearPlato');
+const editarPlatoRoutes = require('./routes/PUT/actualizarPlato');
 const agrefarInsumosRoutes = require('./routes/POST/añadirInsumo');
 const eliminarInsumosRoutes = require('./routes/DELETE/eliminarInsumos');
 const actualizarInsumosRoutes = require('./routes/PUT/actualizarInsumos');
@@ -67,6 +68,7 @@ app.use('/api/carta/actualizar-insumos', actualizarInsumosRoutes);
 {/* 📌 Rutas de platos */}
 app.use('/api/platos', platosRoutes);
 app.use('/api/platos', crearPlatoRoutes);
+app.use('/api/platos', editarPlatoRoutes);
 
 {/* 📌 Rutas de carta */}
 
