@@ -5,6 +5,7 @@ const path = require('path');
 require('dotenv').config();
 
 const productosRoutes = require('./routes/GET/productos');
+const productosStockRoutes = require('./routes/GET/productosStock');
 const usuariosRoutes = require('./routes/GET/usuarios');
 const movimientosRoutes = require('./routes/GET/movimientos');
 const stockRoutes = require('./routes/GET/stock');
@@ -32,6 +33,7 @@ const obtenerProductosRoutes = require('./routes/GET/obtenerProductos');
 const platosRoutes = require('./routes/GET/platos');
 const crearPlatoRoutes = require('./routes/POST/crearPlato');
 const editarPlatoRoutes = require('./routes/PUT/actualizarPlato');
+const eliminarPlatoRoutes = require('./routes/DELETE/eliminarPlato');
 const agrefarInsumosRoutes = require('./routes/POST/añadirInsumo');
 const eliminarInsumosRoutes = require('./routes/DELETE/eliminarInsumos');
 const actualizarInsumosRoutes = require('./routes/PUT/actualizarInsumos');
@@ -55,6 +57,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 {/* 📌 Rutas de productos Insumos */}
 app.use('/api/productos', productosRoutes);
+app.use('/api/productos-con-stock', productosStockRoutes); // Ruta para obtener productos con stock
 app.use('/api/productos/buscar', obtenerProductosRoutes); // Ruta para obtener productos por nombre o código
 app.use('/api/productos', productosCreateRoutes);
 app.use('/api/productos', productosUpdateRoutes);
@@ -69,6 +72,7 @@ app.use('/api/carta/actualizar-insumos', actualizarInsumosRoutes);
 app.use('/api/platos', platosRoutes);
 app.use('/api/platos', crearPlatoRoutes);
 app.use('/api/platos', editarPlatoRoutes);
+app.use('/api/platos', eliminarPlatoRoutes);
 
 {/* 📌 Rutas de carta */}
 
