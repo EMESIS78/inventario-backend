@@ -2,7 +2,14 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
+const http = require('http');
+const socketIo = require('socket.io');
 require('dotenv').config();
+
+const app = express();
+
+const server = http.createServer(app);
+const io = socketIo(server, { cors: { origin: '*' } });
 
 const productosRoutes = require('./routes/GET/productos');
 const productosStockRoutes = require('./routes/GET/productosStock');
@@ -18,7 +25,7 @@ const reporteGlobalRoutes = require('./routes/GET/reporteGlobal');
 const reporteXProductoRoutes = require('./routes/GET/reporteXProducto');
 const ajusteInventarioRoutes = require('./routes/PUT/ajusteInventario');
 const registrosAjusteInventarioRoutes = require('./routes/POST/registrosAjusteInventario');
-const registrosEntradasProductosRoutes = require('./routes/POST/registrosEntradasProductos');
+const registrosEntradasProductosRoutes = require('./routes/POST/registrosEntradasProductos')(io);
 const registrosSalidasProductosRoutes = require('./routes/POST/registrosSalidasProductos');
 const registrosTrasladosProductosRoutes = require('./routes/POST/registrosTrasladosProductos');
 const productosCreateRoutes = require('./routes/POST/crearProducto');
@@ -49,13 +56,12 @@ const informeGlobalPDFRoutes = require('./routes/REPORTES/reporteGlobalPDF');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/userRoutes');
 
-const app = express();
-
+app.set('io', io);
 app.use(cors());
 app.use(bodyParser.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-{/* 📌 Rutas de productos Insumos */}
+{/* 📌 Rutas de productos Insumos */ }
 app.use('/api/productos', productosRoutes);
 app.use('/api/productos-con-stock', productosStockRoutes); // Ruta para obtener productos con stock
 app.use('/api/productos/buscar', obtenerProductosRoutes); // Ruta para obtener productos por nombre o código
@@ -66,35 +72,35 @@ app.use('/api/carta/agregar-insumos', agrefarInsumosRoutes);
 app.use('/api/carta/eliminar-insumos', eliminarInsumosRoutes);
 app.use('/api/carta/actualizar-insumos', actualizarInsumosRoutes);
 
-{/* 📌 Rutas de movimientos */}
+{/* 📌 Rutas de movimientos */ }
 
-{/* 📌 Rutas de platos */}
+{/* 📌 Rutas de platos */ }
 app.use('/api/platos', platosRoutes);
 app.use('/api/platos', crearPlatoRoutes);
 app.use('/api/platos', editarPlatoRoutes);
 app.use('/api/platos', eliminarPlatoRoutes);
 
-{/* 📌 Rutas de carta */}
+{/* 📌 Rutas de carta */ }
 
-{/* 📌 Rutas de alamacenes */}
+{/* 📌 Rutas de alamacenes */ }
 app.use('/api/almacenes', almacenesRoutes);
 
-{/* 📌 Rutas de inventario */}
+{/* 📌 Rutas de inventario */ }
 app.use('/api/inventario', inventarioRoutes);
 
-{/* 📌 Rutas de salidas */}
+{/* 📌 Rutas de salidas */ }
 app.use('/api/salidas', salidasRoutes);
 app.use('/api', detalleSalidaRoutes);
 
-{/* 📌 Rutas de entradas */}
+{/* 📌 Rutas de entradas */ }
 app.use('/api/entradas', entradasRoutes);
 
-{/* 📌 Rutas de traslados */}
+{/* 📌 Rutas de traslados */ }
 app.use('/api/traslados', trasladosRoutes);
 
-{/* 📌 Rutas de usuarios */}
+{/* 📌 Rutas de usuarios */ }
 
-{/* 📌 Rutas de reportes */}
+{/* 📌 Rutas de reportes */ }
 app.use('/api', reporteEntradaRoutes);
 app.use('/api', reporteSalidaRoutes);
 app.use('/api', informeInventarioExcelRoutes);
@@ -102,10 +108,10 @@ app.use('/api', informeInventarioPDFRoutes);
 app.use('/api', informeGlobalExcelRoutes);
 app.use('/api', informeGlobalPDFRoutes);
 
-{/* 📌 Rutas de proveedores */}
+{/* 📌 Rutas de proveedores */ }
 app.use('/api', proveedoresRoutes);
 
-{/* 📌 Rutas de inventario */}
+{/* 📌 Rutas de inventario */ }
 
 app.use('/api', usuariosRoutes);
 app.use('/api', movimientosRoutes);
@@ -127,5 +133,13 @@ app.use('/api', registrosTrasladosProductosRoutes);
 app.use('/api/auth', authRoutes); // Para login y autenticación
 app.use('/api/users', userRoutes); // Para obtener perfil del usuario autenticado
 
+io.on('connection', (socket) => {
+    console.log('✅ Nuevo cliente conectado');
+
+    socket.on('disconnect', () => {
+        console.log('❌ Cliente desconectado');
+    });
+});
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`));
+server.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`));
