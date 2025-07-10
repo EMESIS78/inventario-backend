@@ -1,23 +1,25 @@
 const express = require('express');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 const db = require('../../db/connection');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 const router = express.Router();
 
-// 📁 Configuración de multer para guardar imágenes en /uploads/platos
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadPath = path.join(__dirname, '../../uploads/platos');
-        if (!fs.existsSync(uploadPath)) {
-            fs.mkdirSync(uploadPath, { recursive: true });
-        }
-        cb(null, uploadPath);
+// ✅ Configura Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// ✅ Configura multer con Cloudinary
+const storage = new CloudinaryStorage({
+    cloudinary,
+    params: {
+        folder: 'platos',
+        allowed_formats: ['jpg', 'jpeg', 'png'],
     },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
 });
 const upload = multer({ storage });
 
@@ -34,7 +36,7 @@ router.post('/', upload.single('imagen'), async (req, res) => {
         return res.status(400).json({ error: 'Formato incorrecto en insumos (debe ser JSON válido)' });
     }
 
-    const imagen = req.file ? `platos/${req.file.filename}` : null;
+    const imagen = req.file ? req.file.path : null; // URL pública de la imagen en Cloudinary
 
     console.log('📦 Datos recibidos:', { nombre, descripcion, precio, imagen, insumos });
 
@@ -50,7 +52,7 @@ router.post('/', upload.single('imagen'), async (req, res) => {
             descripcion,
             precio,
             imagen,
-            insumosJSON
+            insumosJSON,
         ]);
 
         console.log('✅ Plato con insumos agregado con éxito');

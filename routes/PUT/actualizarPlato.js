@@ -1,29 +1,30 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 const db = require('../../db/connection');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
-// 📁 Configuración del almacenamiento con multer (guardamos en /uploads/platos)
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadPath = path.join(__dirname, '../../uploads/platos');
-        if (!fs.existsSync(uploadPath)) {
-            fs.mkdirSync(uploadPath, { recursive: true });
-        }
-        cb(null, uploadPath);
+// ✅ Configura Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// ✅ Configura multer con Cloudinary
+const storage = new CloudinaryStorage({
+    cloudinary,
+    params: {
+        folder: 'platos',
+        allowed_formats: ['jpg', 'jpeg', 'png'],
     },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
 });
 const upload = multer({ storage });
 
 // ✅ Ruta para actualizar plato con imagen
 router.put('/actualizarPlato/:id', upload.single('imagen'), async (req, res) => {
     const id_plato = req.params.id;
-
     const { nombre, descripcion, precio } = req.body;
     let insumos;
 
@@ -33,7 +34,7 @@ router.put('/actualizarPlato/:id', upload.single('imagen'), async (req, res) => 
         return res.status(400).json({ error: 'Formato incorrecto en insumos (debe ser JSON válido)' });
     }
 
-    const imagen = req.file ? `platos/${req.file.filename}` : req.body.imagen;
+    const imagen = req.file ? req.file.path : req.body.imagen; // Usa Cloudinary o la imagen anterior
 
     if (!nombre || !descripcion || precio === undefined || !Array.isArray(insumos)) {
         return res.status(400).json({ error: 'Faltan datos requeridos o formato incorrecto' });
@@ -41,14 +42,13 @@ router.put('/actualizarPlato/:id', upload.single('imagen'), async (req, res) => 
 
     try {
         const insumosJSON = JSON.stringify(insumos);
-
         await db.query('CALL EditarPlatoConInsumos(?, ?, ?, ?, ?, ?)', [
             id_plato,
             nombre,
             descripcion,
             precio,
             imagen,
-            insumosJSON
+            insumosJSON,
         ]);
 
         res.json({ success: true, message: 'Plato actualizado correctamente' });
