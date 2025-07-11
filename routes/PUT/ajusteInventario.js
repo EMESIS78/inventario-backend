@@ -3,28 +3,44 @@ const db = require('../../db/connection');
 const router = express.Router();
 
 router.put('/actualizar-stock', async (req, res) => {
-    const { p_id_almacen, p_id_articulo, p_nuevo_stock } = req.body;
+    const { p_id_almacen, p_id_articulo, p_nuevo_stock, p_user_id } = req.body;
 
-    console.log('Actualizando stock manualmente:', { p_id_almacen, p_id_articulo, p_nuevo_stock });
-
-    // Validar que los parámetros obligatorios estén presentes
-    if (!p_id_almacen || !p_id_articulo || p_nuevo_stock === undefined) {
-        return res.status(400).json({ error: 'Se requieren p_id_almacen, p_id_articulo y p_nuevo_stock.' });
+    if (!p_id_almacen || !p_id_articulo || p_nuevo_stock === undefined || !p_user_id) {
+        return res.status(400).json({ error: 'Faltan campos obligatorios.' });
     }
 
-    const query = 'CALL ActualizarStockManual(?, ?, ?)';
-
     try {
-        console.log('Ejecutando query:', query, 'con parámetros:', [p_id_almacen, p_id_articulo, p_nuevo_stock]);
+        await db.query('CALL ActualizarStockManual(?, ?, ?, ?)', [
+            p_id_almacen,
+            p_id_articulo,
+            p_nuevo_stock,
+            p_user_id
+        ]);
 
-        await db.query(query, [p_id_almacen, p_id_articulo, p_nuevo_stock]);
+        console.log('✅ Stock actualizado correctamente.');
 
-        console.log('Stock actualizado correctamente.');
-        res.status(200).json({ message: 'Stock actualizado correctamente.' });
+        // 👉 Obtener nombre del usuario y nombre del producto
+        const [[userRow]] = await db.query('SELECT name FROM users WHERE id = ?', [p_user_id]);
+        const usuario = userRow?.name || 'Usuario desconocido';
 
+        const [[productoRow]] = await db.query('SELECT nombre FROM productos WHERE id_producto = ?', [p_id_articulo]);
+        const nombreProducto = productoRow?.nombre || 'Producto desconocido';
+
+        // 👉 Emitir evento WebSocket
+        const io = req.app.get('io');  // Obtenemos la instancia de Socket.io
+        io.emit('ajuste-stock', {
+            mensaje: 'STOCK AJUSTADO',
+            fecha: new Date().toISOString(),
+            usuario,
+            almacen: p_id_almacen,
+            producto: nombreProducto,
+            nuevo_stock: p_nuevo_stock
+        });
+
+        res.json({ message: 'Stock actualizado correctamente.' });
     } catch (error) {
-        console.error('Error al actualizar el stock:', error);
-        res.status(500).json({ error: 'Ocurrió un error al actualizar el stock.' });
+        console.error('❌ Error al actualizar stock:', error);
+        res.status(500).json({ error: 'Error al actualizar stock.' });
     }
 });
 
