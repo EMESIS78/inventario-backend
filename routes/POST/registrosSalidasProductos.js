@@ -35,7 +35,7 @@ router.post('/registrar-salida', async (req, res) => {
 
     } catch (error) {
         console.error('❌ Error al registrar la salida:', error);
-        res.status(500).json({ error: 'Ocurrió un error al registrar la salida.' });
+        res.status(500).json({ error: error.message, detalles: error });
     }
 });
 
